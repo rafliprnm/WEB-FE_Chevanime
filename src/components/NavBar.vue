@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="navbar bg-orange-400 text-white shadow-lg px-52">
-      <div class="navbar-start">
+      <div class="navbar-end lg:navbar-start">
         <div class="dropdown">
           <label tabindex="0" class="btn btn-ghost lg:hidden">
             <svg
@@ -32,11 +32,17 @@
               w-52
             "
           >
-            <li><router-link to="/" class="btn btn-ghost">Top Anime</router-link></li>
-            <li><router-link to="/top-manga"  class="btn btn-ghost">Top Manga</router-link></li>
-            <li><router-link to="/schedule" class="btn btn-ghost">Jadwal</router-link></li>
-            <li><router-link to="/forum" class="btn btn-ghost">Forum</router-link></li>
-            <li><router-link to=" /login" class="btn btn-ghost">Login</router-link></li>
+            <li><router-link to="/" class="btn btn-ghost text-black">Top Anime</router-link></li>
+            <li><router-link to="/top-manga"  class="btn btn-ghost text-black">Top Manga</router-link></li>
+            <li><router-link to="/schedule" class="btn btn-ghost text-black">Jadwal Anime</router-link></li>
+            <li><router-link to="/forum" class="btn btn-ghost text-black">Forum</router-link></li>
+            <li v-if="isLogin">
+              <a class="btn btn-ghost text-black" @click.prevent="doLogout">
+                {{user.displayName}}(Logout)
+              </a>
+            </li>
+            <li v-else><router-link to=" /login" class="btn btn-ghost text-black">Login</router-link></li>
+            
            
           </ul>
         </div>
@@ -46,9 +52,15 @@
         <ul class="menu menu-horizontal p-0">
             <li><router-link to="/" class="btn btn-ghost">Top Anime</router-link></li>
             <li><router-link to="/top-manga"  class="btn btn-ghost">Top Manga</router-link></li>
-            <li><router-link to="/schedule" class="btn btn-ghost">Jadwal</router-link></li>
+            <li><router-link to="/schedule" class="btn btn-ghost">Jadwal Anime</router-link></li>
             <li><router-link to="/forum" class="btn btn-ghost">Forum</router-link></li>
-            <li><router-link to=" /login" class="btn btn-ghost">Login</router-link></li>
+            <li v-if="isLogin">
+              <a class="btn btn-ghost" @click.prevent="doLogout">
+                {{user.displayName}}(Logout)
+              </a>
+            </li>
+            <li v-else><router-link to=" /login" class="btn btn-ghost">Login</router-link></li>
+            
         </ul>
       </div>
     </div>
@@ -56,7 +68,31 @@
 </template>
 
 <script>
+import { getAuth } from '@firebase/auth';
 export default {
   name: "NavBar",
+  data(){
+    return{
+      isLogin: false,
+      user: {}
+    }
+  },
+  created() {
+    const user = getAuth().currentUser;
+    if (user!== null) {
+      this.isLogin = true;
+      this.user = user
+    }
+  },
+  methods: {
+    doLogout() {
+      getAuth()
+        .signOut()
+        .then(()=>{
+          window.location.reload();
+        })
+        .catch((err) => alaret(err.message))
+    }
+  }
 };
 </script>
